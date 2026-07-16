@@ -1,13 +1,185 @@
 <!DOCTYPE html>
 <html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Performans ara değerlendirme görüşmelerine hazırlık uygulaması" />
-    <title>Ara Değerlendirme Görüşme Koçu</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Performans ara değerlendirme görüşmeleri için yönetici ve çalışan hazırlık asistanı." />
+  <title>Ara Değerlendirme Görüşme Koçu</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <p class="eyebrow">PERFORMANS ARA DEĞERLENDİRME</p>
+          <h1>Görüşme Koçu</h1>
+        </div>
+      </div>
+      <button class="ghost-button" id="guideButton" type="button">Görüşme Rehberi</button>
+    </header>
+
+    <main>
+      <section id="roleScreen" class="hero-section">
+        <div class="hero-copy">
+          <p class="eyebrow">GÖRÜŞME ÖNCESİ HAZIRLIK</p>
+          <h2>Görüşmede ne söyleyeceğinizi birlikte netleştirin.</h2>
+          <p>
+            Yaşadığınız durumu, aldığınız geri bildirimi veya söylemekte zorlandığınız cümleyi yazın.
+            Rolünüze göre profesyonel ifade alternatifleri ve görüşme akışı oluşturun.
+          </p>
+        </div>
+
+        <div class="role-grid">
+          <button class="role-card" data-role="manager" type="button">
+            <span class="role-icon">Y</span>
+            <strong>Yöneticiyim</strong>
+            <span>Çalışanımla gerçekleştireceğim ara değerlendirme görüşmesine hazırlanmak istiyorum.</span>
+            <em>Çalışanımla Görüşmeye Hazırlan →</em>
+          </button>
+
+          <button class="role-card" data-role="employee" type="button">
+            <span class="role-icon">Ç</span>
+            <strong>Çalışanım</strong>
+            <span>Yöneticimle gerçekleştireceğim ara değerlendirme görüşmesine hazırlanmak istiyorum.</span>
+            <em>Yöneticimle Görüşmeye Hazırlan →</em>
+          </button>
+        </div>
+      </section>
+
+      <section id="workspace" class="workspace hidden">
+        <aside class="sidebar">
+          <div class="sidebar-card">
+            <p class="eyebrow">ROLÜNÜZ</p>
+            <div class="role-badge">
+              <span id="roleBadgeIcon">Y</span>
+              <strong id="roleBadgeText">Yönetici</strong>
+            </div>
+            <button id="changeRoleButton" class="text-button" type="button">Rolü değiştir</button>
+          </div>
+
+          <div class="sidebar-card">
+            <p class="eyebrow">HIZLI BAŞLANGIÇ</p>
+            <div id="scenarioList" class="scenario-list"></div>
+          </div>
+
+          <div class="sidebar-card privacy-card">
+            <p class="eyebrow">GİZLİLİK</p>
+            <p>Gerçek ad, sicil numarası, sağlık bilgisi veya hassas kişisel veri yazmayın.</p>
+            <p class="small">Bu sürüm verileri sunucuya göndermez ve kalıcı olarak saklamaz.</p>
+          </div>
+        </aside>
+
+        <section class="main-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">VAKANIZI PAYLAŞIN</p>
+              <h2 id="workspaceTitle">Çalışanınızla hangi konuyu konuşmak istiyorsunuz?</h2>
+            </div>
+            <button id="clearButton" class="ghost-button compact" type="button">Temizle</button>
+          </div>
+
+          <div class="input-card">
+            <label for="userInput" id="inputLabel">
+              Yaşadığınız durumu veya söylemekte zorlandığınız cümleyi yazın.
+            </label>
+            <textarea
+              id="userInput"
+              rows="6"
+              maxlength="1200"
+              placeholder="Örnek: Çalışanım hedefinin gerisinde ancak çok emek verdiğini söylüyor. Bunu nasıl konuşabilirim?"
+            ></textarea>
+            <div class="input-footer">
+              <span id="charCount">0 / 1200</span>
+              <button id="generateButton" class="primary-button" type="button">Görüşme Önerisi Oluştur</button>
+            </div>
+          </div>
+
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">“ ”</div>
+            <h3>Doğrudan kullanabileceğiniz cümleler burada oluşacak.</h3>
+            <p>Uygulama, yazdığınız vakayı hedef, gelişim alanı, itiraz, destek ihtiyacı ve iletişim konusu açısından değerlendirir.</p>
+          </div>
+
+          <div id="resultArea" class="result-area hidden">
+            <div class="result-toolbar">
+              <div>
+                <p class="eyebrow">GÖRÜŞME ÖNERİSİ</p>
+                <h3 id="resultTitle">Profesyonel ifade önerisi</h3>
+              </div>
+              <button id="copyAllButton" class="ghost-button compact" type="button">Tümünü Kopyala</button>
+            </div>
+
+            <div id="responseCards"></div>
+
+            <div class="quick-actions" id="quickActions">
+              <button type="button" data-action="shorter">Daha kısa</button>
+              <button type="button" data-action="clearer">Daha net</button>
+              <button type="button" data-action="diplomatic">Daha diplomatik</button>
+              <button type="button" data-action="alternative">Alternatif üret</button>
+            </div>
+
+            <div class="disclaimer">
+              Bu öneriler görüşme hazırlığı amacıyla sunulur. Nihai ifade; somut olay, kurum uygulamaları ve yönetsel sorumluluklar dikkate alınarak değerlendirilmelidir.
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="guideDialog">
+    <div class="dialog-header">
+      <div>
+        <p class="eyebrow">GÖRÜŞME REHBERİ</p>
+        <h2>Ara değerlendirme görüşmesinde temel yaklaşım</h2>
+      </div>
+      <button id="closeGuideButton" class="icon-button" type="button" aria-label="Kapat">×</button>
+    </div>
+
+    <div class="guide-grid">
+      <article>
+        <h3>Geri bildirim nedir?</h3>
+        <p>Belirli bir davranışın veya sonucun etkisini görünür kılan ve gelecekteki beklentiyi netleştiren profesyonel bir değerlendirmedir.</p>
+      </article>
+      <article>
+        <h3>Koçluk nedir?</h3>
+        <p>Karşı tarafa doğrudan çözüm vermek yerine, doğru sorularla kendi aksiyonunu oluşturmasını destekleyen gelişim yaklaşımıdır.</p>
+      </article>
+      <article>
+        <h3>SBI tekniği</h3>
+        <p><strong>Durum:</strong> Ne zaman ve nerede? <strong>Davranış:</strong> Ne gözlemlendi? <strong>Etki:</strong> İş sonucuna veya ekibe etkisi ne oldu?</p>
+      </article>
+      <article>
+        <h3>GROW modeli</h3>
+        <p><strong>Hedef:</strong> Nereye ulaşılacak? <strong>Mevcut durum:</strong> Şu anda neredeyiz? <strong>Seçenekler:</strong> Neler yapılabilir? <strong>Aksiyon:</strong> İlk adım nedir?</p>
+      </article>
+      <article>
+        <h3>Yönetici için</h3>
+        <p>Somut örnek kullanın, kişiliğe değil davranışa odaklanın, çalışanın görüşünü alın ve yılın kalan dönemi için net aksiyon belirleyin.</p>
+      </article>
+      <article>
+        <h3>Çalışan için</h3>
+        <p>Katkılarınızı sonuçlarla açıklayın, katılmadığınız değerlendirmeler için somut örnek isteyin ve ihtiyaç duyduğunuz desteği net biçimde ifade edin.</p>
+      </article>
+    </div>
+
+    <div class="guide-flow">
+      <h3>Önerilen görüşme akışı</h3>
+      <ol>
+        <li>Görüşmenin amacını açıklayın.</li>
+        <li>Hedeflerin mevcut durumunu somut verilerle değerlendirin.</li>
+        <li>Güçlü yönleri ve katkıları görünür kılın.</li>
+        <li>Gelişim alanlarını davranış ve etki üzerinden konuşun.</li>
+        <li>Karşı tarafın görüşünü alın.</li>
+        <li>Destek ihtiyacını ve aksiyonları netleştirin.</li>
+        <li>Takip tarihi belirleyerek görüşmeyi kapatın.</li>
+      </ol>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
 </html>
